@@ -193,4 +193,4 @@ haziel/
 
 ## 📄 Licença
 
-MIT © [Dijalmass](https://github.com/dijalmass)
+GPL-3.0 © [Dijalmass](https://github.com/dijalmass)
