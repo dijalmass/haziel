@@ -20,6 +20,7 @@ import {
 import { QUALITY_PRESETS, type QualityPreset } from "@/lib/constants";
 import { Camera, Video, Settings, Link as LinkIcon, AlertCircle, Play, StopCircle } from "lucide-react";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { createSlug } from "@/lib/utils";
 
 export default function ConnectPage() {
   const [deviceName, setDeviceName] = useState("");
@@ -31,7 +32,8 @@ export default function ConnectPage() {
   const { stream, devices, selectedDeviceId, quality, error: camError, start, stop, setQuality } = useCamera();
   const { authenticate, isAuthenticated, error: authError, wsStatus } = useAuth();
   const { send } = useWebSocket();
-  const { addLocalStream } = useWebRTC("sender", deviceName);
+  const deviceSlug = createSlug(deviceName);
+  const { addLocalStream } = useWebRTC("sender", deviceSlug);
 
   // Carrega PIN e nome salvo
   useEffect(() => {
@@ -46,6 +48,19 @@ export default function ConnectPage() {
     };
     loadPrefs();
   }, [navigate]);
+
+  // Solicita permissão da câmera na montagem para preencher o Select
+  useEffect(() => {
+    let mounted = true;
+    const initCamera = async () => {
+      if (mounted && !stream) {
+        await start();
+      }
+    };
+    initCamera();
+    return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sincroniza o stream local com o WebRTC
   useEffect(() => {
@@ -84,8 +99,8 @@ export default function ConnectPage() {
   const handleStartStreaming = useCallback(async () => {
     if (!deviceName.trim()) return;
 
-    // 1. Tenta autenticar/registrar no servidor
-    authenticate(pin, deviceName);
+    // 1. Tenta autenticar/registrar no servidor usando o slug
+    authenticate(pin, deviceSlug);
     
     // 2. Tenta abrir a câmera se ainda não estiver aberta
     if (!stream) {
@@ -94,12 +109,12 @@ export default function ConnectPage() {
 
     setIsStreaming(true);
     
-    // Gera a URL para o OBS
+    // Gera a URL para o OBS com o slug
     const ip = window.location.hostname;
     const port = window.location.port;
-    const url = `${window.location.protocol}//${ip}${port ? ":" + port : ""}/view/${deviceName}?pin=${pin}&obs=true`;
+    const url = `${window.location.protocol}//${ip}${port ? ":" + port : ""}/view/${deviceSlug}?pin=${pin}&obs=true`;
     setObsUrl(url);
-  }, [deviceName, pin, stream, start, authenticate]);
+  }, [deviceName, deviceSlug, pin, stream, start, authenticate]);
 
   const handleStopStreaming = useCallback(() => {
     setIsStreaming(false);
