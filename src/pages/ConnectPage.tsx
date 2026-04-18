@@ -224,6 +224,7 @@ export default function ConnectPage() {
 
               <Button 
                 onClick={isStreaming ? handleStopStreaming : handleStartStreaming}
+                disabled={wsStatus !== 'connected'}
                 className={`w-full font-bold h-12 transition-all ${
                   isStreaming 
                     ? "bg-zinc-100 text-zinc-950 hover:bg-zinc-300" 

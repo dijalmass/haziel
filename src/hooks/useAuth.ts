@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { db } from '../lib/db';
-import type { RegisteredResponse, AuthErrorResponse } from '../lib/signaling';
+import type { RegisteredResponse, AuthErrorResponse, ErrorResponse } from '../lib/signaling';
 
 export function useAuth() {
   const { status, send, on, off } = useWebSocket();
@@ -39,9 +39,15 @@ export function useAuth() {
     db.clearSession();
   }, []);
 
+  const onError = useCallback((data: ErrorResponse) => {
+    setError(data.message);
+    setIsLoading(false);
+  }, []);
+
   useEffect(() => {
     on('registered', onRegistered);
     on('auth-error', onAuthError);
+    on('error', onError);
 
     // Tenta restaurar sessão
     db.getSession().then(session => {
@@ -56,8 +62,9 @@ export function useAuth() {
     return () => {
       off('registered', onRegistered);
       off('auth-error', onAuthError);
+      off('error', onError);
     };
-  }, [on, off, onRegistered, onAuthError]);
+  }, [on, off, onRegistered, onAuthError, onError]);
 
   const logout = useCallback(() => {
     setToken(null);
