@@ -14,6 +14,9 @@ export function handleMessage(ws: ServerWebSocket<WsData>, message: string | Buf
       case 'view':
         handleView(ws, data);
         break;
+      case 'list-devices':
+        handleListDevices(ws, data);
+        break;
       case 'offer':
       case 'answer':
       case 'ice-candidate':
@@ -31,6 +34,16 @@ export function handleMessage(ws: ServerWebSocket<WsData>, message: string | Buf
   } catch (err) {
     sendError(ws, 'INVALID_JSON', 'Mensagem JSON inválida');
   }
+}
+
+function handleListDevices(ws: ServerWebSocket<WsData>, data: { pin: string }) {
+  if (!validatePin(data.pin)) {
+    ws.send(JSON.stringify({ type: 'auth-error', reason: 'PIN inválido' }));
+    return;
+  }
+
+  const devices = registry.listDevices();
+  ws.send(JSON.stringify({ type: 'device-list', devices }));
 }
 
 function handleRegister(ws: ServerWebSocket<WsData>, data: { name: string; pin: string }) {
@@ -69,7 +82,7 @@ function handleRegister(ws: ServerWebSocket<WsData>, data: { name: string; pin: 
   ws.publish('events', JSON.stringify({ type: 'device-online', name: data.name }));
 }
 
-function handleView(ws: ServerWebSocket<WsData>, data: { name: string; pin: string }) {
+function handleView(ws: ServerWebSocket<WsData>, data: { name: string; pin: string; lowBitrate?: boolean }) {
   if (!validatePin(data.pin)) {
     ws.send(JSON.stringify({ type: 'auth-error', reason: 'PIN inválido' }));
     return;
@@ -93,7 +106,11 @@ function handleView(ws: ServerWebSocket<WsData>, data: { name: string; pin: stri
   ws.subscribe(`device:${data.name}`);
   ws.subscribe(`viewer:${viewerId}`);
 
-  device.ws.send(JSON.stringify({ type: 'viewer-joined', viewerId }));
+  device.ws.send(JSON.stringify({ 
+    type: 'viewer-joined', 
+    viewerId, 
+    lowBitrate: !!data.lowBitrate 
+  }));
 }
 
 function handleRelay(ws: ServerWebSocket<WsData>, data: any) {

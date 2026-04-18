@@ -5,7 +5,7 @@ import { useWebRTC } from "../hooks/useWebRTC";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { DeviceStatus } from "../components/DeviceStatus";
 import { db } from "../lib/db";
-import { Loader2, MonitorOff, Camera } from "lucide-react";
+import { Loader2, MonitorOff, Camera, ArrowLeft } from "lucide-react";
 
 export default function ViewerPage() {
   const { name } = useParams<{ name: string }>();
@@ -14,6 +14,8 @@ export default function ViewerPage() {
   
   const obsMode = searchParams.get("obs") === "true";
   const urlPin = searchParams.get("pin");
+  const lowBitrate = searchParams.get("lowBitrate") === "true";
+  const fromAdmin = searchParams.get("fromAdmin") === "true";
   
   const { send, status: wsStatus, on, off } = useWebSocket();
   const { remoteStream, connectionState, reset } = useWebRTC("viewer", name);
@@ -37,9 +39,9 @@ export default function ViewerPage() {
     }
 
     // 2. Envia 'view'
-    send({ type: 'view', name, pin: targetPin });
+    send({ type: 'view', name, pin: targetPin, lowBitrate });
     setIsReady(true);
-  }, [wsStatus, name, urlPin, send, navigate]);
+  }, [wsStatus, name, urlPin, lowBitrate, send, navigate]);
 
   useEffect(() => {
     initViewer();
@@ -114,7 +116,18 @@ export default function ViewerPage() {
             </div>
           </div>
           
-          <DeviceStatus status={remoteStream ? 'online' : (connectionState === 'connecting' ? 'connecting' : 'offline')} />
+          <div className="flex items-center gap-4">
+            {fromAdmin && (
+              <button 
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold rounded-xl border border-zinc-800 transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                DASHBOARD
+              </button>
+            )}
+            <DeviceStatus status={remoteStream ? 'online' : (connectionState === 'connecting' ? 'connecting' : 'offline')} />
+          </div>
         </div>
 
         <div className="relative aspect-video rounded-3xl overflow-hidden border border-zinc-800 bg-black shadow-2xl">

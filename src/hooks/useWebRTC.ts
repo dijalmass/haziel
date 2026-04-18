@@ -19,6 +19,8 @@ export function useWebRTC(mode: WebRTCMode, deviceName?: string) {
   const pcsRef = useRef<Map<string, RTCPeerConnection>>(new Map());
   // Local stream for sender
   const localStreamRef = useRef<MediaStream | null>(null);
+  // Sender: viewerId -> isLowBitrate
+  const lowBitrateViewersRef = useRef<Set<string>>(new Set());
 
   const createPC = useCallback((viewerId?: string) => {
     const pc = new RTCPeerConnection(RTC_CONFIG);
@@ -57,12 +59,15 @@ export function useWebRTC(mode: WebRTCMode, deviceName?: string) {
     return pc;
   }, [mode, deviceName, send]);
 
-  // --- SENDER HANDLERS ---
-  
   const onViewerJoined = useCallback(async (data: ViewerJoinedResponse) => {
     if (mode !== 'sender') return;
     
-    console.log(`[WebRTC] Viewer joined: ${data.viewerId}`);
+    console.log(`[WebRTC] Viewer joined: ${data.viewerId} (lowBitrate: ${data.lowBitrate})`);
+    
+    if (data.lowBitrate) {
+      lowBitrateViewersRef.current.add(data.viewerId);
+    }
+    
     const pc = createPC(data.viewerId);
     pcsRef.current.set(data.viewerId, pc);
     
@@ -88,10 +93,10 @@ export function useWebRTC(mode: WebRTCMode, deviceName?: string) {
       pc.getSenders().forEach(sender => {
         if (sender.track?.kind === 'video') {
           const params = sender.getParameters();
-          if (!params.encodings) params.encodings = [{}];
+          // Força 10 Mbps (10,000,000 bits) ou 500 kbps se for admin preview
+          const isLow = lowBitrateViewersRef.current.has(data.viewerId!);
+          params.encodings[0].maxBitrate = isLow ? 500000 : 10000000;
           
-          // Força 10 Mbps (10,000,000 bits)
-          params.encodings[0].maxBitrate = 10000000;
           sender.setParameters(params).catch(err => 
             console.error('[WebRTC] Error setting bitrate:', err)
           );
@@ -151,6 +156,7 @@ export function useWebRTC(mode: WebRTCMode, deviceName?: string) {
       
       pcsRef.current.forEach(pc => pc.close());
       pcsRef.current.clear();
+      lowBitrateViewersRef.current.clear();
     };
   }, [on, off, onViewerJoined, onOffer, onAnswer, onIceCandidate]);
 

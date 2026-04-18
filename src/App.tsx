@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import ConnectPage from './pages/ConnectPage';
 import ViewerPage from './pages/ViewerPage';
+import AdminPage from './pages/AdminPage';
 import { WebSocketProvider } from './providers/WebSocketProvider';
 
 function Home() {
@@ -27,6 +28,12 @@ function Home() {
         >
           Configurar PIN
         </a>
+        <a 
+          href="/admin" 
+          className="flex-1 px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-95"
+        >
+          Admin
+        </a>
       </div>
 
       <footer className="mt-20 text-[10px] text-zinc-700 uppercase tracking-[0.2em] font-bold">
@@ -45,6 +52,7 @@ export default function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/connect" element={<ConnectPage />} />
           <Route path="/view/:name" element={<ViewerPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </WebSocketProvider>
     </BrowserRouter>

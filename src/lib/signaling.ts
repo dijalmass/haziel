@@ -9,7 +9,13 @@ export type RegisterMessage = {
 export type ViewMessage = { 
   type: 'view'; 
   name: string; 
-  pin: string 
+  pin: string;
+  lowBitrate?: boolean;
+};
+
+export type ListDevicesMessage = {
+  type: 'list-devices';
+  pin: string;
 };
 
 export type OfferMessage = { 
@@ -44,6 +50,7 @@ export type DisconnectMessage = {
 export type ClientMessage = 
   | RegisterMessage 
   | ViewMessage 
+  | ListDevicesMessage
   | OfferMessage 
   | AnswerMessage 
   | IceCandidateMessage 
@@ -65,7 +72,13 @@ export type AuthErrorResponse = {
 
 export type ViewerJoinedResponse = { 
   type: 'viewer-joined'; 
-  viewerId: string 
+  viewerId: string;
+  lowBitrate?: boolean;
+};
+
+export type DeviceListResponse = {
+  type: 'device-list';
+  devices: { name: string; status: string }[];
 };
 
 export type DeviceOnlineEvent = { 
@@ -88,6 +101,7 @@ export type ServerMessage =
   | RegisteredResponse 
   | AuthErrorResponse 
   | ViewerJoinedResponse 
+  | DeviceListResponse
   | DeviceOnlineEvent 
   | DeviceOfflineEvent 
   | ErrorResponse 
