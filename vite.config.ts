@@ -1,13 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+import mkcert from 'vite-plugin-mkcert'
 import path from 'path'
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(() => {
   return {
     plugins: [
-      mode === 'development' ? basicSsl() : undefined,
+      mkcert(),
       tailwindcss(),
       react(),
     ],
@@ -24,6 +24,14 @@ export default defineConfig(({ command, mode }) => {
           ws: true,
           changeOrigin: true,
           secure: false,
+          configure: (proxy, _options) => {
+            proxy.on('error', (err, _req, _res) => {
+              console.log('proxy error', err);
+            });
+            proxy.on('proxyReqWs', (proxyReq, req, socket, options, head) => {
+              console.log('Proxying WS:', req.url);
+            });
+          }
         },
       },
     },
