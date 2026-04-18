@@ -162,9 +162,17 @@ export function useWebRTC(mode: WebRTCMode, deviceName?: string) {
 
   const addLocalStream = useCallback((stream: MediaStream) => {
     localStreamRef.current = stream;
-    // Update existing connections if any (usually none yet as viewers join later)
+    // Update existing connections using replaceTrack for seamless switching
     pcsRef.current.forEach(pc => {
-      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+      const senders = pc.getSenders();
+      stream.getTracks().forEach(track => {
+        const sender = senders.find(s => s.track?.kind === track.kind);
+        if (sender) {
+          sender.replaceTrack(track);
+        } else {
+          pc.addTrack(track, stream);
+        }
+      });
     });
   }, []);
 

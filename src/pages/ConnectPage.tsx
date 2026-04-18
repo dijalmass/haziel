@@ -24,6 +24,7 @@ import { createSlug } from "@/lib/utils";
 
 export default function ConnectPage() {
   const [deviceName, setDeviceName] = useState("");
+  const [nameError, setNameError] = useState(false);
   const [pin, setPin] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [obsUrl, setObsUrl] = useState("");
@@ -97,7 +98,11 @@ export default function ConnectPage() {
   }, [isStreaming]);
 
   const handleStartStreaming = useCallback(async () => {
-    if (!deviceName.trim()) return;
+    if (!deviceName.trim()) {
+      setNameError(true);
+      return;
+    }
+    setNameError(false);
 
     // 1. Tenta autenticar/registrar no servidor usando o slug
     authenticate(pin, deviceSlug);
@@ -143,15 +148,30 @@ export default function ConnectPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="deviceName" className="text-zinc-400">Nome do Dispositivo</Label>
+                <Label htmlFor="deviceName" className={`text-sm font-medium ${nameError ? "text-red-500" : "text-zinc-400"}`}>
+                  Nome do Dispositivo
+                </Label>
                 <Input 
                   id="deviceName"
                   placeholder="Ex: Câmera Principal" 
                   value={deviceName}
-                  onChange={(e) => setDeviceName(e.target.value)}
+                  onChange={(e) => {
+                    setDeviceName(e.target.value);
+                    if (nameError) setNameError(false);
+                  }}
                   disabled={isStreaming}
-                  className="bg-zinc-800 border-zinc-700 text-zinc-100 focus:ring-zinc-600"
+                  className={`bg-zinc-800 text-zinc-100 focus:ring-zinc-600 ${
+                    nameError ? "border-red-500 focus-visible:ring-red-500" : "border-zinc-700"
+                  }`}
                 />
+                {nameError && (
+                  <p className="text-xs text-red-500 mt-1">O nome do dispositivo é obrigatório</p>
+                )}
+                {deviceSlug && !nameError && (
+                  <p className="text-[10px] text-zinc-500 mt-1">
+                    URL de acesso: <span className="font-mono text-zinc-400">/view/{deviceSlug}</span>
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -159,7 +179,6 @@ export default function ConnectPage() {
                 <Select 
                   value={selectedDeviceId} 
                   onValueChange={(val) => start(val)}
-                  disabled={isStreaming}
                 >
                   <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
                     <SelectValue placeholder="Escolha a câmera" />
@@ -182,7 +201,6 @@ export default function ConnectPage() {
                     setQuality(val);
                     if (stream) start(selectedDeviceId, val);
                   }}
-                  disabled={isStreaming}
                 >
                   <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
                     <SelectValue placeholder="Escolha a qualidade" />
