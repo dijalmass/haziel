@@ -1,43 +1,59 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import ConnectPage from './pages/ConnectPage';
 import ViewerPage from './pages/ViewerPage';
 import AdminPage from './pages/AdminPage';
 import { WebSocketProvider } from './providers/WebSocketProvider';
+import { Aperture, Video, Settings, LayoutDashboard } from 'lucide-react';
 
 function Home() {
-  // Simples redirecionamento para o fluxo de conexão ou viewer
-  // Por enquanto deixaremos uma landing minimalista
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-4 text-center">
-      <div className="mb-8 p-4 rounded-3xl bg-zinc-900/50 border border-zinc-800 animate-in fade-in zoom-in duration-700">
-        <h1 className="text-6xl font-black text-white tracking-tighter mb-2">חזיאל</h1>
-        <p className="text-zinc-500 font-medium tracking-widest uppercase text-xs">A quem Deus vê</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-6 text-center relative overflow-hidden">
+      {/* Background elegant effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/40 via-zinc-950 to-zinc-950 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col items-center mb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out">
+        <div className="mb-8 p-5 bg-zinc-900/30 rounded-full border border-white/5 shadow-2xl backdrop-blur-xl flex items-center justify-center">
+          <Aperture className="w-12 h-12 text-white/90" strokeWidth={1} />
+        </div>
+        <h1 className="text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 tracking-tighter mb-4 select-none">
+          חזיאל
+        </h1>
+        <p className="text-zinc-400 font-medium tracking-[0.3em] uppercase text-sm md:text-base select-none">
+          A quem Deus vê
+        </p>
       </div>
       
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-        <a 
-          href="/connect" 
-          className="flex-1 px-8 py-4 bg-white text-black rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-white/5 active:scale-95"
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-150 ease-out fill-mode-both">
+        <Link 
+          to="/connect" 
+          className="group relative flex flex-col items-center justify-center gap-4 p-8 bg-zinc-900/40 border border-white/10 rounded-[2rem] hover:bg-white hover:border-white transition-all duration-500 shadow-xl shadow-black/50 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
-          Transmitir
-        </a>
-        <a 
-          href="/auth" 
-          className="flex-1 px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-95"
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Video className="w-8 h-8 text-zinc-300 group-hover:text-black transition-colors duration-500" strokeWidth={1.5} />
+          <span className="font-semibold text-zinc-300 group-hover:text-black transition-colors duration-500 tracking-wide">Transmitir</span>
+        </Link>
+
+        <Link 
+          to="/auth" 
+          className="group relative flex flex-col items-center justify-center gap-4 p-8 bg-zinc-900/40 border border-white/5 rounded-[2rem] hover:bg-zinc-800/80 hover:border-white/20 transition-all duration-500 shadow-xl shadow-black/50 outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
-          Configurar PIN
-        </a>
-        <a 
-          href="/admin" 
-          className="flex-1 px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-95"
+          <Settings className="w-8 h-8 text-zinc-400 group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
+          <span className="font-semibold text-zinc-400 group-hover:text-white transition-colors duration-500 tracking-wide">Configurar PIN</span>
+        </Link>
+
+        <Link 
+          to="/admin" 
+          className="group relative flex flex-col items-center justify-center gap-4 p-8 bg-zinc-900/40 border border-white/5 rounded-[2rem] hover:bg-zinc-800/80 hover:border-white/20 transition-all duration-500 shadow-xl shadow-black/50 outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
-          Admin
-        </a>
+          <LayoutDashboard className="w-8 h-8 text-zinc-400 group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
+          <span className="font-semibold text-zinc-400 group-hover:text-white transition-colors duration-500 tracking-wide">Admin</span>
+        </Link>
       </div>
 
-      <footer className="mt-20 text-[10px] text-zinc-700 uppercase tracking-[0.2em] font-bold">
-        Haziel — Professional Camera Streaming for OBS
+      <footer className="absolute bottom-10 text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-medium opacity-50 select-none">
+        Haziel — Professional Camera Streaming
       </footer>
     </div>
   );
