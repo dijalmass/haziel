@@ -43,6 +43,7 @@ export type WsData = {
   name?: string;
   token?: string;
   viewTarget?: string;
+  viewerId?: string;
 };
 
 export type DeviceInfo = {

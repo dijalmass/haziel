@@ -11,10 +11,15 @@ const server = Bun.serve<WsData>({
     const url = new URL(req.url);
 
     if (url.pathname === "/ws") {
+      console.log(`[HTTP] Upgrade request for ${url.pathname}`);
       const success = server.upgrade(req, {
         data: { type: 'unknown' }
       });
-      if (success) return undefined;
+      if (success) {
+        console.log(`[HTTP] Upgrade successful`);
+        return undefined;
+      }
+      console.error(`[HTTP] Upgrade failed`);
       return new Response("WebSocket upgrade failed", { status: 400 });
     }
 

@@ -86,20 +86,34 @@ function handleView(ws: ServerWebSocket<WsData>, data: { name: string; pin: stri
   
   // Notifica o sender que um viewer entrou
   const viewerId = crypto.randomUUID();
+  ws.data.viewerId = viewerId;
+  
+  // O viewer se inscreve no tópico do dispositivo para receber broadcasts (como offline/online)
+  // E no seu próprio tópico privado para receber offers/candidates específicos
+  ws.subscribe(`device:${data.name}`);
+  ws.subscribe(`viewer:${viewerId}`);
+
   device.ws.send(JSON.stringify({ type: 'viewer-joined', viewerId }));
 }
 
 function handleRelay(ws: ServerWebSocket<WsData>, data: any) {
   // Apenas roteia a mensagem para o alvo correto
   if (ws.data.type === 'sender') {
-    // Sender → Viewer relay (TODO: implementar mapeamento de viewerId se necessário)
-    // Por enquanto, broadcast simplificado para o tópico do dispositivo
-    ws.publish(`device:${ws.data.name}`, JSON.stringify(data));
+    // Sender → Viewer relay
+    // Se a mensagem tiver viewerId, envia apenas para aquele viewer
+    if (data.viewerId) {
+      ws.publish(`viewer:${data.viewerId}`, JSON.stringify(data));
+    } else {
+      // Caso contrário, broadcast para todos os viewers do dispositivo
+      ws.publish(`device:${ws.data.name}`, JSON.stringify(data));
+    }
   } else if (ws.data.type === 'viewer' && ws.data.viewTarget) {
     // Viewer → Sender relay
     const device = registry.getDevice(ws.data.viewTarget);
     if (device) {
-      device.ws.send(JSON.stringify(data));
+      // Inclui o viewerId na mensagem para o sender saber de quem veio
+      const enrichedData = { ...data, viewerId: ws.data.viewerId };
+      device.ws.send(JSON.stringify(enrichedData));
     }
   }
 }

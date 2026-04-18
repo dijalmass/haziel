@@ -1,46 +1,52 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import AuthPage from './pages/AuthPage';
+import ConnectPage from './pages/ConnectPage';
+import ViewerPage from './pages/ViewerPage';
+import { WebSocketProvider } from './providers/WebSocketProvider';
 
 function Home() {
+  // Simples redirecionamento para o fluxo de conexão ou viewer
+  // Por enquanto deixaremos uma landing minimalista
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-4 tracking-tight">Haziel</h1>
-      <p className="text-zinc-400 mb-8">חזיאל — "A quem Deus vê"</p>
-      
-      <div className="flex gap-4">
-        <Link 
-          to="/connect" 
-          className="px-6 py-2 bg-zinc-100 text-zinc-950 rounded-md font-medium hover:bg-zinc-200 transition-colors"
-        >
-          Conectar Câmera
-        </Link>
-        <Link 
-          to="/view/test" 
-          className="px-6 py-2 border border-zinc-800 rounded-md font-medium hover:bg-zinc-900 transition-colors"
-        >
-          Ver Stream (Teste)
-        </Link>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-4 text-center">
+      <div className="mb-8 p-4 rounded-3xl bg-zinc-900/50 border border-zinc-800 animate-in fade-in zoom-in duration-700">
+        <h1 className="text-6xl font-black text-white tracking-tighter mb-2">חזיאל</h1>
+        <p className="text-zinc-500 font-medium tracking-widest uppercase text-xs">A quem Deus vê</p>
       </div>
-    </div>
-  )
-}
+      
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <a 
+          href="/connect" 
+          className="flex-1 px-8 py-4 bg-white text-black rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-white/5 active:scale-95"
+        >
+          Transmitir
+        </a>
+        <a 
+          href="/auth" 
+          className="flex-1 px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-95"
+        >
+          Configurar PIN
+        </a>
+      </div>
 
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
-      <Link to="/" className="text-blue-400 hover:underline">Voltar para Home</Link>
+      <footer className="mt-20 text-[10px] text-zinc-700 uppercase tracking-[0.2em] font-bold">
+        Haziel — Professional Camera Streaming for OBS
+      </footer>
     </div>
-  )
+  );
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/connect" element={<Placeholder title="Página de Conexão (TODO)" />} />
-        <Route path="/view/:name" element={<Placeholder title="Visualizador de Câmera (TODO)" />} />
-      </Routes>
+      <WebSocketProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/connect" element={<ConnectPage />} />
+          <Route path="/view/:name" element={<ViewerPage />} />
+        </Routes>
+      </WebSocketProvider>
     </BrowserRouter>
-  )
+  );
 }

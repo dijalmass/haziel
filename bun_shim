@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ "$1" == "add" ]; then
+  shift
+  npm install "$@"
+else
+  npm "$@"
+fi
