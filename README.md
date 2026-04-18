@@ -73,18 +73,18 @@ bun run build
 bun run start
 ```
 
-O servidor estará disponível em `http://{SEU_IP_LOCAL}:3000`.
+Em produção, a aplicação estará disponível com HTTPS em `https://{SEU_IP_LOCAL}:4173`. O servidor de sinalização roda por baixo dos panos na porta 3001 via proxy.
 
 ---
 
 ### ⚠️ Importante: HTTPS Necessário
 Para que os navegadores permitam o acesso à câmera e microfone em dispositivos móveis, a aplicação **deve** ser acessada via HTTPS. O projeto já vem configurado com um certificado auto-assinado para desenvolvimento.
 
-Ao acessar `https://{SEU_IP_LOCAL}:5173`, seu navegador mostrará um aviso de segurança. Clique em **"Avançado"** e **"Prosseguir para {IP} (não seguro)"** para continuar.
+Ao acessar `https://{SEU_IP_LOCAL}:5173` (ou porta `4173` em produção), seu navegador mostrará um aviso de segurança. Clique em **"Avançado"** e **"Prosseguir para {IP} (não seguro)"** para continuar.
 
 ### 1. Conectar um dispositivo (celular)
 
-1. No celular, abra o navegador e acesse `https://{IP_DO_SERVIDOR}:5173`
+1. No celular, abra o navegador e acesse `https://{IP_DO_SERVIDOR}:5173` (ou porta `4173` em produção)
 2. Digite o PIN de 4 dígitos
 3. Defina um nome para o dispositivo (ex: `S22-Ultra`)
 4. Selecione a câmera e a qualidade desejada
@@ -97,6 +97,7 @@ Ao acessar `https://{SEU_IP_LOCAL}:5173`, seu navegador mostrará um aviso de se
    ```
    https://{IP_DO_SERVIDOR}:5173/view/{nome-do-dispositivo}?pin=1234&obs=true
    ```
+   *(Nota: Se estiver rodando em produção, use a porta `4173` em vez de `5173`)*
 3. Configure a resolução desejada (ex: 1920x1080)
 4. Clique em **OK** — o vídeo aparecerá na cena
 
@@ -116,7 +117,7 @@ Variáveis de ambiente (`.env`):
 | Variável | Descrição | Padrão |
 |----------|-----------|--------|
 | `CAM_PIN` | PIN de 4 dígitos para autenticação | `1234` |
-| `PORT` | Porta do servidor | `3000` |
+| `PORT` | Porta do servidor de sinalização | `3001` |
 
 ---
 
@@ -125,7 +126,7 @@ Variáveis de ambiente (`.env`):
 ```
 Celular A ──┐                              ┌── OBS (Browser Source /view/cam-a)
 Celular B ──┤── WebSocket ── Bun Server ── ┤── OBS (Browser Source /view/cam-b)
-Celular C ──┘   (signaling)  :3000         └── OBS (Browser Source /view/cam-c)
+Celular C ──┘   (signaling)  :3001         └── OBS (Browser Source /view/cam-c)
                     │
             ┌───────┴───────┐
             │ Apenas troca  │
