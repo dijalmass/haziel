@@ -77,22 +77,25 @@ O servidor estará disponível em `http://{SEU_IP_LOCAL}:3000`.
 
 ---
 
-## 📖 Como Usar
+### ⚠️ Importante: HTTPS Necessário
+Para que os navegadores permitam o acesso à câmera e microfone em dispositivos móveis, a aplicação **deve** ser acessada via HTTPS. O projeto já vem configurado com um certificado auto-assinado para desenvolvimento.
+
+Ao acessar `https://{SEU_IP_LOCAL}:5173`, seu navegador mostrará um aviso de segurança. Clique em **"Avançado"** e **"Prosseguir para {IP} (não seguro)"** para continuar.
 
 ### 1. Conectar um dispositivo (celular)
 
-1. No celular, abra o navegador e acesse `http://{IP_DO_SERVIDOR}:3000`
+1. No celular, abra o navegador e acesse `https://{IP_DO_SERVIDOR}:5173`
 2. Digite o PIN de 4 dígitos
-3. Defina um nome para o dispositivo (ex: `camera-sala`)
+3. Defina um nome para o dispositivo (ex: `S22-Ultra`)
 4. Selecione a câmera e a qualidade desejada
-5. Toque em **"Iniciar Streaming"**
+5. Toque em **"Iniciar Transmissão"**
 
 ### 2. Adicionar no OBS
 
 1. No OBS, clique em **Sources → + → Browser Source**
 2. Na URL, coloque:
    ```
-   http://{IP_DO_SERVIDOR}:3000/view/{nome-do-dispositivo}?pin=1234&obs=true
+   https://{IP_DO_SERVIDOR}:5173/view/{nome-do-dispositivo}?pin=1234&obs=true
    ```
 3. Configure a resolução desejada (ex: 1920x1080)
 4. Clique em **OK** — o vídeo aparecerá na cena
@@ -163,14 +166,25 @@ haziel/
 
 ---
 
+## ⚡ Otimizações de Performance
+
+- **Bitrate Forçado (10 Mbps)**: Garantimos que o WebRTC utilize a banda da sua rede local para transmitir em alta fidelidade.
+- **Screen Wake Lock**: O dispositivo não apaga a tela enquanto estiver transmitindo.
+- **Auto-Reconexão**: O Viewer detecta automaticamente quando o dispositivo volta a ficar online e restabelece o stream sem F5.
+
+---
+
 ## 🗺️ Roadmap
 
 - [x] Documentação e planejamento
-- [ ] Servidor de sinalização WebRTC (Bun)
-- [ ] Frontend: autenticação por PIN
-- [ ] Frontend: página de conexão (sender)
-- [ ] Frontend: página de viewer (para OBS)
-- [ ] Reconexão automática com timeout
+- [x] Servidor de sinalização WebRTC (Bun)
+- [x] Frontend: autenticação por PIN
+- [x] Frontend: página de conexão (sender)
+- [x] Frontend: página de viewer (para OBS)
+- [x] Reconexão automática com timeout
+- [x] Suporte a HTTPS (SSL Local)
+- [x] Bitrate de Alta Performance (10Mbps)
+- [x] Screen Wake Lock (Tela sempre ativa)
 - [ ] Dashboard admin (v2)
 - [ ] Suporte a áudio opcional (v2)
 - [ ] Gravação local de streams (v2)

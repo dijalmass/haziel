@@ -1,4 +1,4 @@
-# Haziel — Streaming de câmeras via WebRTC para OBS
+# Haziel — Streaming de câmeras via WebRTC para OBS [CONCLUÍDO ✅]
 
 > **חזיאל** — *"A quem Deus vê"* · *"Visão de Deus"*
 
@@ -6,7 +6,18 @@ Projeto para capturar câmeras de dispositivos na rede local e disponibilizá-la
 
 ---
 
-## Arquitetura Geral
+## ✅ Status da Implementação
+- [x] **Etapa 1**: Fundação e Servidor de Sinalização
+- [x] **Etapa 2**: Hooks Core, Persistência e UI Base
+- [x] **Etapa 3**: Páginas Frontend e Integração Final
+- [x] **Extra**: Estabilização, HTTPS e Bitrate de Alta Performance
+
+---
+
+## Arquitetura Geral [ATUALIZADO]
+- **Shared WebSocket**: Implementado `WebSocketProvider` para garantir conexão única.
+- **HTTPS/SSL**: Necessário para APIs de mídia (Vite `basic-ssl`).
+- **High Bitrate**: Forçado 10Mbps para eliminar pixelado em rede local.
 
 ```mermaid
 graph TB

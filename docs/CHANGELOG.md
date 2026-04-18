@@ -7,14 +7,27 @@ e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [Unreleased]
+## [0.3.0] - 2026-04-18
 
-### Planejado (Etapa 3 — Páginas e Integração Final)
-- Criação de `AuthPage` com entrada de PIN e autenticação baseada em sessão.
-- Criação de `ConnectPage` com interface de streaming (Sender) e controles de câmera.
-- Criação de `ViewerPage` para exibição de vídeo WebRTC (Viewer) e modo OBS Browser Source.
-- Atualização do `App.tsx` integrando as novas páginas e finalizando os roteamentos placeholders.
-- Testes manuais do fluxo completo ponta-a-ponta (Device -> Server -> OBS).
+### Adicionado (Etapa 3 — Páginas e Estabilização)
+- **Páginas e Navegação**:
+  - `AuthPage` com entrada de PIN estilizada e autenticação persistente.
+  - `ConnectPage` (Sender) com seletor de câmera, qualidade e controle de streaming.
+  - `ViewerPage` (Viewer) com modo OBS Browser Source (`?obs=true`) e auto-auth (`?pin=XXXX`).
+- **Melhorias de Performance e Qualidade**:
+  - Forçado bitrate de **10 Mbps** nas conexões WebRTC para eliminar artefatos de compressão em rede local.
+  - Adicionado suporte a **Fullscreen** no preview do dispositivo para melhor visualização.
+  - Implementação da **Screen Wake Lock API** para impedir que a tela do celular apague durante a transmissão.
+- **Estabilidade e Conectividade**:
+  - Criação do `WebSocketProvider` para compartilhamento de conexão única entre múltiplos hooks.
+  - Sistema de **Auto-Reconexão Inteligente**: o Viewer detecta quando o Sender volta a ficar online e restabelece o stream automaticamente.
+  - Limpeza de frames congelados ao detectar queda de conexão ou parada manual.
+  - Suporte a **HTTPS (SSL)** via `basic-ssl` no Vite para permitir acesso às APIs de mídia em dispositivos móveis.
+
+### Corrigido
+- Problema de espelhamento horizontal no preview da câmera (agora desativado por padrão para câmeras traseiras).
+- Conflito de múltiplas instâncias de WebSocket que causava falhas na sinalização WebRTC.
+- Erro `TypeError: enumerateDevices is undefined` em contextos não seguros (HTTP).
 
 ---
 
