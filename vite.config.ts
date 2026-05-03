@@ -21,17 +21,7 @@ export default defineConfig(() => {
       proxy: {
         '/ws': {
           target: 'ws://127.0.0.1:3001',
-          ws: true,
-          changeOrigin: true,
-          secure: false,
-          configure: (proxy, _options) => {
-            proxy.on('error', (err, _req, _res) => {
-              console.log('proxy error', err);
-            });
-            proxy.on('proxyReqWs', (proxyReq, req, socket, options, head) => {
-              console.log('Proxying WS:', req.url);
-            });
-          }
+          ws: true
         },
       },
     },
@@ -40,9 +30,7 @@ export default defineConfig(() => {
       proxy: {
         '/ws': {
           target: 'ws://127.0.0.1:3001',
-          ws: true,
-          changeOrigin: true,
-          secure: false,
+          ws: true
         },
       },
     },
